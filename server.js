@@ -1,12 +1,12 @@
 var express = require("express");
-var mysql = require("mysql");
+var mysql = require("mysql2");
+var fs = require("fs");
+var seedDepartment = fs.readFileSync("seedDepartment.sql").toString();
+var seedRole = fs.readFileSync("seedRole.sql").toString();
+var seedEmployee = fs.readFileSync("seedEmployee.sql").toString();
 
 // Create instance of express app.
 var app = express();
-
-// Set the port of our application
-// process.env.PORT lets the port be set by Heroku
-var PORT = process.env.PORT || 8080;
 
 // MySQL DB Connection Information (remember to change this with our specific credentials)
 var connection = mysql.createConnection({
@@ -14,37 +14,62 @@ var connection = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "Gizmoe_90!",
-  database: "employees"
+  database: "employees_db",
 });
 
 // Initiate MySQL Connection.
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
     return;
   }
-  console.log("connected as id " + connection.threadId);
-  queryAllEmployees();
+
+  connection.query("SELECT COUNT(*) AS Count FROM Employee", function (
+    err,
+    result
+  ) {
+    if (result[0].Count === 0) {
+      seedDatabase();
+      queryAllEmployees();
+    } else {
+      queryAllEmployees();
+    }
+  });
 });
 
-// Routes
-app.get("/employees", function(req, res) {
-  connection.query("SELECT * FROM employees ORDER BY id", function(err, result) {
-    if (err) throw err;
-    
-    var html = "<h1>Employees Ordered BY ID</h1>";
-
-    html += "<ul>";
-
-    for (var i = 0; i < result.length; i++) {
-      html += "<li><p> ID: " + result[i].id + "</p>";
-      html += "<p> Name: " + result[i].name + "</p>";
-      html += "<p> Salary: " + result[i].salary + "</p>";
-      html += "<p>Department: " + result[i].department + "</p></li>";
+const seedDatabase = () => {
+  connection.query(seedDepartment, function (err, result) {
+    if (err) {
+      console.log(err);
     }
+  });
+  connection.query(seedRole, function (err, result) {
+    if (err) {
+      console.log(err);
+    }
+  });
+  connection.query(seedEmployee, function (err, result) {
+    if (err) {
+      console.log(err);
+    }
+  });
+};
 
-    html += "</ul>";
+const queryAllEmployees = () => {
+  connection.query("SELECT * FROM employee ORDER BY id", function (
+    err,
+    result
+  ) {
+    console.log(result);
+  });
+};
 
-    res.send(html);
+// Routes
+app.get("/api/employees", function (req, res) {
+  connection.query("SELECT * FROM employees ORDER BY id", function (
+    err,
+    result
+  ) {
+    if (err) throw err;
   });
 });

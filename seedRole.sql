@@ -1,0 +1,1 @@
+INSERT INTO employees_db.Role (title, salary, department_id) VALUES ('Manager', '80,000', '1'), ('Co-Manager', '1,000,000', '1'), ('Director', '110,000', '2'), ('Vice President', '500,000', '4'), ('Employee', '3.14', '3'), ('Team Lead', '15', '5'), ('Product Owner', '365', '2'); 
