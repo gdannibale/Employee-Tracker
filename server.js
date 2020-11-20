@@ -1,9 +1,9 @@
 var express = require("express");
 var mysql = require("mysql2");
 var fs = require("fs");
-var seedDepartment = fs.readFileSync("seedDepartment.sql").toString();
-var seedRole = fs.readFileSync("seedRole.sql").toString();
-var seedEmployee = fs.readFileSync("seedEmployee.sql").toString();
+var seeds = fs.readFileSync("seeds.sql").toString();
+// var seedRole = fs.readFileSync("seedRole.sql").toString();
+// var seedEmployee = fs.readFileSync("seedEmployee.sql").toString();
 
 // Create instance of express app.
 var app = express();
